@@ -16,10 +16,11 @@ void MSA::add_sequence(const string& str){
 
 void MSA::concat_sequence(const string& str,int i){
 	if((int)text.size()<=i){
-		text.resize(i);
-		lines=i;
+		//~ cout<<"I had to resize"<<endl;
+		text.resize(i+1);
+		lines=i+1;
 	}
-	text[i]+=(str);
+	text[i]+=str;
 	length=text[i].size();
 }
 
@@ -28,7 +29,7 @@ void MSA::concat_sequence(const string& str,int i){
 bool MSA::check_sane() const{
 	bool result(true);
 	if(lines!=(int)text.size()){
-		cout<<"Incorrect number of lines"<<endl;
+		cout<<"Incorrect number of lines:	"<<text.size()<<" instead of:	"<<lines<<endl;
 		result=false;
 	}
 	for(int i(0);i<(int)text.size();++i){
@@ -72,12 +73,18 @@ bool MSA::perfect_column(int indice)const {
 MSA MSA::get_compacted() const{
 	MSA result;
 	for(int i(0);i<length;++i){
+		//~ cout<<"pos"<<i<<endl;
 		if(not perfect_column(i)){
+			//~ cout<<"diff found"<<endl;
 			for(int j(0);j<(int)text.size();++j){
-				result.concat_sequence(text[i].substr(j,1),j);
+				//~ cout<<text[j].substr(i,1)<<endl;
+				result.concat_sequence(text[j].substr(i,1),j);
 			}
+		}else{
+			//~ cout<<"BORING "<<endl;
 		}
 	}
+	cout<<"Compaction done, length before:	"<<length<<" after:	"<<result.length<<endl;
 	return result;
 }
 
