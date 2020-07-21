@@ -37,7 +37,7 @@ int main(int argc, char** argv){
 		}
 		msa_fasta.add_sequence(seq);
 		msa_fasta.printing();
-		MSA result = msa_fasta.get_compacted();
+		MSA result = msa_fasta.get_compacted_quasi(2);
 		result.printing();
 	}
 	else{

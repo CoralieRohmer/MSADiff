@@ -27,6 +27,9 @@ class MSA
     void printing() const;
     bool perfect_column(int indice)const;
     MSA get_compacted() const;
+    bool perfect_column_quasi(int indice,int max_errors)const;
+    MSA get_compacted_quasi(int max_errors ) const;
+
     MSA(){
 		length=0;
 		lines=0;
