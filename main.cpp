@@ -1,17 +1,19 @@
 #include "MSA.h"
-
 #include <fstream>
 #include <cstring>
 #include <string>
 #include <iostream>
 #include <vector>
-
 #include <cstdlib>
 #include <ctime>
-
 #include <string>
 #include <vector>
+
+
+
 using namespace std;
+
+
 
 int main(int argc, char** argv){
 	string const file_fasta(argv[1]);
@@ -37,7 +39,7 @@ int main(int argc, char** argv){
 		}
 		msa_fasta.add_sequence(seq);
 		msa_fasta.printing();
-		MSA result = msa_fasta.get_compacted_quasi(2);
+		MSA result = msa_fasta.get_compacted_quasi(1);
 		result.printing();
 	}
 	else{

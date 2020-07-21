@@ -69,11 +69,28 @@ bool MSA::perfect_column(int indice)const {
 }
 
 
+char MSA::major_nuc(int indice)const{
+	int scores[alphabet.size()]={0};
+	char result('Z');
+	for(int i(0);i<(int)text.size();++i){
+		scores[alphabet.find(text[i][indice])]++;
+	}
+	int max_score(0);
+	for(int i(0);i<alphabet.size();++i){
+		if(scores[i]>max_score){
+			result=alphabet[i];
+			max_score=scores[i];
+		}
+	}
+	return result;
+}
+
+
 
 bool MSA::perfect_column_quasi(int indice,int max_errors)const {
-	char c(text[0][indice]);
+	char c(major_nuc(indice));
 	int errors(0);
-	for(int i(1);i<(int)text.size();++i){
+	for(int i(0);i<(int)text.size();++i){
 		if(c!=text[i][indice]){
 			errors++;
 		}
