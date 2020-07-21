@@ -34,7 +34,7 @@ bool MSA::check_sane() const{
 	for(int i(0);i<(int)text.size();++i){
 		if((int)text[i].size()!=length){
 			result=false;
-			cout<<"Incorrect length"<<endl;
+			cout<<"Incorrect length line:	"<<i<<" length:	"<<text[i].size()<<" instead of:	"<<length<<endl;
 
 		}
 		for(int j(0);j<(int)text[i].size();++j){
