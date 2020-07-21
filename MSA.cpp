@@ -38,7 +38,7 @@ bool MSA::check_sane() const{
 
 		}
 		for(int j(0);j<(int)text[i].size();++j){
-			if( alphabet.find(text[i][j])== std::string::npos){
+			if( alphabet.find(text[i][j])!= std::string::npos){
 				cout<<"Incorrect char"<<endl;
 			}
 		}
@@ -55,6 +55,31 @@ void MSA::printing() const{
 	}
 }
 
+
+
+bool MSA::perfect_column(int indice)const {
+	char c(text[0][indice]);
+	for(int i(1);i<(int)text.size();++i){
+		if(c!=text[i][indice]){
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
+MSA MSA::get_compacted() const{
+	MSA result;
+	for(int i(0);i<length;++i){
+		if(not perfect_column(i)){
+			for(int j(0);j<(int)text.size();++j){
+				result.concat_sequence(text[i].substr(j,1),j);
+			}
+		}
+	}
+	return result;
+}
 
 
 

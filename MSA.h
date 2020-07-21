@@ -23,9 +23,10 @@ class MSA
     
     void add_sequence(const string& str);
     void concat_sequence(const string& str,int i);
-    void print() const;
     bool check_sane() const ;
     void printing() const;
+    bool perfect_column(int indice)const;
+    MSA get_compacted() const;
     MSA(){
 		length=0;
 		lines=0;
