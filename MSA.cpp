@@ -38,8 +38,8 @@ bool MSA::check_sane() const{
 
 		}
 		for(int j(0);j<(int)text[i].size();++j){
-			if( alphabet.find(text[i][j])!= std::string::npos){
-				cout<<"Incorrect char"<<endl;
+			if(alphabet.find(text[i][j])== std::string::npos){
+				cout<<"Incorrect char:	"<<text[i][j]<<endl;
 			}
 		}
 	}

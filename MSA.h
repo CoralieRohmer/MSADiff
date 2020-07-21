@@ -17,7 +17,7 @@ class MSA
 {
     public:
     vector<string> text;
-    string alphabet="ACTG_actg";
+    string alphabet="ACTG-actg";
     int length;
     int lines;
     
