@@ -25,7 +25,7 @@ void MSA::concat_sequence(const string& str,int i){
 
 
 
-bool MSA::check_sane()const{
+bool MSA::check_sane() const{
 	bool result(true);
 	if(lines!=(int)text.size()){
 		cout<<"Incorrect number of lines"<<endl;
@@ -48,11 +48,13 @@ bool MSA::check_sane()const{
 
 
 
-void MSA::print()const{
-	check_sane()
+void MSA::printing() const{
+	check_sane();
 	for(int i(0);i<(int)text.size();++i){
 		cout<<text[i]<<endl;
 	}
 }
+
+
 
 
