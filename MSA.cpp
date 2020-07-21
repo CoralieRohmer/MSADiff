@@ -140,3 +140,27 @@ MSA MSA::get_compacted_quasi(int max_errors ) const{
 
 
 
+void MSA::parser_fasta(string file){
+	ifstream flux(file.c_str());
+	string seq("");
+	if(flux){
+		srand(time(NULL));
+		string ligne("");
+		while(getline(flux, ligne)){
+			if (ligne[0] == '>'){
+				if (seq != ""){
+					add_sequence(seq);
+				}
+				seq = "";
+			}
+			else{
+				seq += ligne;
+			}
+		}
+		add_sequence(seq);
+	}
+	else{
+		cout << "ERREUR: Impossible d'ouvrir le fichier." << endl;
+		exit(0);
+	}
+}
