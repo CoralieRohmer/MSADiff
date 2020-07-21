@@ -160,7 +160,11 @@ void MSA::parser_fasta(string file){
 		add_sequence(seq);
 	}
 	else{
-		cout << "ERREUR: Impossible d'ouvrir le fichier." << endl;
+		cout << "ERROR: Unable to open the file.." << endl;
 		exit(0);
 	}
+}
+
+string consensus(int threshold) const{
+
 }
