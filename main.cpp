@@ -19,7 +19,8 @@ int main(int argc, char** argv){
 	MSA msa_fasta = MSA();
 	msa_fasta.parser_fasta(argv[1]);
 	MSA result = msa_fasta.get_compacted_quasi(1);
-	result.printing();
+	//result.printing();
 	//std::cout << msa_fasta.consensus(10) << '\n';
+	std::cout << msa_fasta.consensus_IG(80) << '\n';
   return 0;
 }

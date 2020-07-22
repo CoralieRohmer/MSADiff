@@ -17,7 +17,7 @@ class MSA
 {
     public:
     vector<string> text;
-    string alphabet="ACTG-actg";
+    string alphabet="ACGT-actg";
     int length;
     int lines;
 
@@ -32,6 +32,9 @@ class MSA
     MSA get_compacted_quasi(int max_errors ) const;
     void parser_fasta(string file);
     string consensus(int threshold) const;
+    string consensus_IG(int threshold) const; //consensus IUPAC + gap
+    char conversion_IG(string nucleotides) const; //IG = code IUPAC + gap
+
 
     MSA(){
 		length=0;
