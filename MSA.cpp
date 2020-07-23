@@ -209,6 +209,7 @@ string MSA::consensus(int threshold) const{
 string MSA::consensus_IG(int threshold) const{
 	string consensus_seq("");
 	for(int i(0);i<length;++i){
+		std::cout << "pos"<< i << '\n';
 		int scores[alphabet.size()]={0};
 
 		for(int j(0);j<(int)text.size();++j){
@@ -254,6 +255,7 @@ string MSA::consensus_IG(int threshold) const{
 
 		}
 		consensus_seq += conversion_IG(totale_conserved_nuc);
+		std::cout << totale_conserved_nuc << '\n';
 	}
 	return consensus_seq;
 }
@@ -292,7 +294,7 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 			i++;
 		}
 		string bases[11] = {"AG","CT","CG","AT","GT","AC","CGT","AGT","ACT","ACG","ACGT"};
-		string IUPAC_code =	"R     Y    S    W    K   M     B     D     H     V     N";
+		string IUPAC_code =	"RYSWKMBDHVN";
 		bool code_found(false);
 		i=0;
 
@@ -389,6 +391,3 @@ string apply_mask(string seq, const string& mask){
 	}
 	return seq;
 }
-
-
-

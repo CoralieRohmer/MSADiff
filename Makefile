@@ -3,8 +3,8 @@ CFLAGS=-Wall -c -O3
 
 all: MTool
 
-main: main.o MSA.o
-	$(CC) -o main main.o MSA.o
+MTool: main.o MSA.o
+	$(CC) -o MTool main.o MSA.o
 
 
 MSA.o: MSA.cpp MSA.h
