@@ -130,6 +130,20 @@ MSA MSA::get_compacted_quasi(int max_errors ) const{
 
 
 
+
+MSA MSA::apply_mask_MSA(const string& mask) const{
+	MSA result;
+	string line;
+	for(int i(0);i<(int)text.size();++i){
+		line=text[i];
+		line=apply_mask(line,mask);
+		result.add_sequence(line);
+	}
+	return result;
+}
+
+
+
 void MSA::parser_fasta(string file){
 	ifstream flux(file.c_str());
 	string seq("");
@@ -375,3 +389,6 @@ string apply_mask(string seq, const string& mask){
 	}
 	return seq;
 }
+
+
+

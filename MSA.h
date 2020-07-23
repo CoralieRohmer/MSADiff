@@ -13,6 +13,10 @@ using namespace std;
 
 
 
+bool char_in_string(char c, const string& str);
+string apply_mask(string seq, const string& mask);
+
+
 class MSA
 {
     public:
@@ -34,6 +38,7 @@ class MSA
     string consensus(int threshold) const;
     string consensus_IG(int threshold) const; //consensus IUPAC + gap
     string conversion_IG(string nucleotides_and_gap) const; //IG = code IUPAC + gap
+    MSA apply_mask_MSA(const string& mask) const;
 
 
     MSA(){
