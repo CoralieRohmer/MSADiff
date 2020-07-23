@@ -260,21 +260,28 @@ string MSA::consensus_IG(int threshold) const{
 
 
 
-char MSA::conversion_IG(string nucleotides) const{
-	char result(' ');
-	if (nucleotides.size() == 1) {
+string MSA::conversion_IG(string nucleotides_and_gap) const{
+	string result("");
+	bool gap(false);
+	int i(0);
+	string nucleotides("");
+	for (int i = 0; i < nucleotides_and_gap.size(); i++) {
+		if ('-' == nucleotides_and_gap[i]){
+			gap = true;
+		}
+		else{
+			nucleotides += nucleotides_and_gap[i];
+		}
+	}
+
+	if (nucleotides.size() <= 1) {
+		if (nucleotides != ""){
+				result = nucleotides[0];
+		}
 		result = nucleotides[0];
 	}
 	else{
 		//std::cout << nucleotides << '\n';
-		bool gap(false);
-		int i(0);
-		while( !gap && i < nucleotides.size()) {
-			if ('-' == nucleotides[i]){
-				gap = true;
-			}
-			i++;
-		}
 		string bases[11] = {"AG","CT","CG","AT","GT","AC","CGT","AGT","ACT","ACG","ACGT"};
 		string IUPAC_code =	"RYSWKMBDHVN";
 		bool code_found(false);
@@ -291,21 +298,19 @@ char MSA::conversion_IG(string nucleotides) const{
 					}
 				}
 			}
-			int nucleotide_to_be_found = nucleotides.size();
-			if (gap){
-				nucleotide_to_be_found--;
-			}
-			if(nuc_find == nucleotide_to_be_found){
+
+			if(nuc_find == nucleotides.size()){
 				result = IUPAC_code[i];
 				code_found = true;
 			}
 			i++;
 		}
-
-		if (gap) {
-			result = tolower(result);
-		}
 	}
 
+	if (gap) {
+		result = tolower(result[0]);
+	}
+
+	//std::cout <<  "[" << nucleotides_and_gap << "] [" << nucleotides << "] [" << result << "]" << '\n';
 	return result;
 }
