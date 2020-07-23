@@ -278,7 +278,9 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 		if (nucleotides != ""){
 				result = nucleotides[0];
 		}
-		result = nucleotides[0];
+		else{
+			result = "-";
+		}
 	}
 	else{
 		//std::cout << nucleotides << '\n';
