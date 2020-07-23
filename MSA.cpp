@@ -15,7 +15,6 @@ void MSA::add_sequence(const string& str){
 
 void MSA::concat_sequence(const string& str,int i){
 	if((int)text.size()<=i){
-		//~ cout<<"I had to resize"<<endl;
 		text.resize(i+1);
 		lines=i+1;
 	}
@@ -75,7 +74,7 @@ char MSA::major_nuc(int indice)const{
 		scores[alphabet.find(text[i][indice])]++;
 	}
 	int max_score(0);
-	for(int i(0);i<alphabet.size();++i){
+	for(int i(0);i<(int)alphabet.size();++i){
 		if(scores[i]>max_score){
 			result=alphabet[i];
 			max_score=scores[i];
@@ -102,15 +101,11 @@ bool MSA::perfect_column_quasi(int indice,int max_errors)const {
 MSA MSA::get_compacted() const{
 	MSA result;
 	for(int i(0);i<length;++i){
-		//~ cout<<"pos"<<i<<endl;
 		if(not perfect_column(i)){
-			//~ cout<<"diff found"<<endl;
 			for(int j(0);j<(int)text.size();++j){
-				//~ cout<<text[j].substr(i,1)<<endl;
 				result.concat_sequence(text[j].substr(i,1),j);
 			}
 		}else{
-			//~ cout<<"BORING "<<endl;
 		}
 	}
 	cout<<"Compaction done, length before:	"<<length<<" after:	"<<result.length<<endl;
@@ -122,15 +117,11 @@ MSA MSA::get_compacted() const{
 MSA MSA::get_compacted_quasi(int max_errors ) const{
 	MSA result;
 	for(int i(0);i<length;++i){
-		//~ cout<<"pos"<<i<<endl;
 		if(not perfect_column_quasi(i,max_errors)){
-			//~ cout<<"diff found"<<endl;
 			for(int j(0);j<(int)text.size();++j){
-				//~ cout<<text[j].substr(i,1)<<endl;
 				result.concat_sequence(text[j].substr(i,1),j);
 			}
 		}else{
-			//~ cout<<"BORING "<<endl;
 		}
 	}
 	cout<<"Compaction done, length before:	"<<length<<" after:	"<<result.length<<endl;
@@ -178,7 +169,7 @@ string MSA::consensus(int threshold) const{
 		int max_score(0);
 		char conserved_nuc(' ');
 		bool equality(false);
-		for(int j(0);j<alphabet.size();++j){
+		for(int j(0);j<(int)alphabet.size();++j){
 			if(scores[j]>max_score){
 				conserved_nuc=alphabet[j];
 				max_score=scores[j];
@@ -204,14 +195,11 @@ string MSA::consensus(int threshold) const{
 string MSA::consensus_IG(int threshold) const{
 	string consensus_seq("");
 	for(int i(0);i<length;++i){
-		//cout<<"pos"<<i<<endl;
 		int scores[alphabet.size()]={0};
 
 		for(int j(0);j<(int)text.size();++j){
 			scores[alphabet.find(text[j][i])]++;
-			//std::cout << text[j][i];
 		}
-		//std::cout << "  :" << '\n';
 		int totale_score(0);
 		string totale_conserved_nuc("");
 		while (totale_score < threshold){
@@ -219,14 +207,13 @@ string MSA::consensus_IG(int threshold) const{
 			string conserved_nuc("");
 			bool equality(false);
 
-			for(int j(0);j<alphabet.size();++j){
+			for(int j(0);j<(int)alphabet.size();++j){
 				bool already_treated_nuc(false);
-				for (int k = 0; k < totale_conserved_nuc.size(); k++) {
+				for (int k = 0; k < (int)totale_conserved_nuc.size(); k++) {
 					if (alphabet[j] == totale_conserved_nuc[k]){
 						already_treated_nuc = true;
 					}
 				}
-				//std::cout << alphabet[j] << "   " << already_treated_nuc << '\n';
 				if (!already_treated_nuc){
 					if (scores[j]>max_score){
 						conserved_nuc=alphabet[j];
@@ -250,7 +237,6 @@ string MSA::consensus_IG(int threshold) const{
 			}
 
 			totale_conserved_nuc += conserved_nuc;
-			//std::cout << totale_score << "   "<< totale_conserved_nuc << '\n';
 
 		}
 		consensus_seq += conversion_IG(totale_conserved_nuc);
@@ -269,22 +255,22 @@ char MSA::conversion_IG(string nucleotides) const{
 		//std::cout << nucleotides << '\n';
 		bool gap(false);
 		int i(0);
-		while( !gap && i < nucleotides.size()) {
+		while( !gap && i < (int)nucleotides.size()) {
 			if ('-' == nucleotides[i]){
 				gap = true;
 			}
 			i++;
 		}
 		string bases[11] = {"AG","CT","CG","AT","GT","AC","CGT","AGT","ACT","ACG","ACGT"};
-		string IUPAC_code =	"RYSWKMBDHVN";
+		string IUPAC_code =	"R     Y    S    W    K   M     B     D     H     V     N";
 		bool code_found(false);
 		i=0;
 
 		while(!code_found && i < 11) {
 			int nuc_find(0);
-			for (int j = 0; j < nucleotides.size(); j++) {
+			for (int j = 0; j < (int)nucleotides.size(); j++) {
 				if (nucleotides.size() == bases[i].size()) {
-					for (int k = 0; k < bases[i].size(); k++) {
+					for (int k = 0; k < (int)bases[i].size(); k++) {
 						if (nucleotides[j] == bases[i][k]){
 							nuc_find++;
 						}
@@ -308,4 +294,70 @@ char MSA::conversion_IG(string nucleotides) const{
 	}
 
 	return result;
+}
+
+
+
+bool char_in_string(char c, const string& str){
+	for(int i(0);i<(int)str.size();++i){
+		if(str[i]==c){
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+string apply_mask(string seq, const string& mask){
+	for(int i(0);i<(int)seq.size();++i){
+		char c(mask[i]);
+		//WE TRUST THE CONSENSUS FOR THIS NUC
+		if(char_in_string(c,"ACTG-")){
+			seq[i]=c;
+		}else{
+			switch (seq[i]){
+				case 'A':
+				if(char_in_string(c,"RWMDHVN")){
+					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+				}else{
+					//WE HAVE NO IDEA
+					seq[i]='N';
+				}
+				break;
+				case 'C':
+				if(char_in_string(c,"YSMBHVN")){
+					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+				}else{
+					//WE HAVE NO IDEA
+					seq[i]='N';
+				}
+				break;
+				case 'G':
+				if(char_in_string(c,"RSKBDVN")){
+					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+				}else{
+					//WE HAVE NO IDEA
+					seq[i]='N';
+				}
+				break;
+				case 'T':
+				if(char_in_string(c,"YWKBDHN")){
+					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+				}else{
+					//WE HAVE NO IDEA
+					seq[i]='N';
+				}
+				break;
+				case '-':
+				if(islower(c)){
+					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+				}else{
+					//WE HAVE NO IDEA
+					seq[i]='N';
+				}
+			}
+		}
+	}
+	return seq;
 }
