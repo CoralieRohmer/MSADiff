@@ -39,6 +39,7 @@ class MSA
     string consensus_IG(int threshold) const; //consensus IUPAC + gap
     string conversion_IG(string nucleotides_and_gap) const; //IG = code IUPAC + gap
     MSA apply_mask_MSA(const string& mask) const;
+    void count_agreements() const;
 
 
     MSA(){

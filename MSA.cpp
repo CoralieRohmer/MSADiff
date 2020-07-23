@@ -209,7 +209,6 @@ string MSA::consensus(int threshold) const{
 string MSA::consensus_IG(int threshold) const{
 	string consensus_seq("");
 	for(int i(0);i<length;++i){
-		std::cout << "pos"<< i << '\n';
 		int scores[alphabet.size()]={0};
 
 		for(int j(0);j<(int)text.size();++j){
@@ -255,7 +254,7 @@ string MSA::consensus_IG(int threshold) const{
 
 		}
 		consensus_seq += conversion_IG(totale_conserved_nuc);
-		std::cout << totale_conserved_nuc << '\n';
+		//std::cout << totale_conserved_nuc << '\n';
 	}
 	return consensus_seq;
 }
@@ -390,4 +389,10 @@ string apply_mask(string seq, const string& mask){
 		}
 	}
 	return seq;
+}
+
+
+
+void MSA::count_agreements() const{
+
 }
