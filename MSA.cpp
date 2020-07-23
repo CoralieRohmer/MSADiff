@@ -353,7 +353,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case 'C':
@@ -361,7 +361,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case 'G':
@@ -369,7 +369,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case 'T':
@@ -377,7 +377,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case '-':
@@ -385,7 +385,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 			}
