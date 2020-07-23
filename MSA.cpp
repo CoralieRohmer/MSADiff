@@ -329,6 +329,7 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 
 
 bool char_in_string(char c, const string& str){
+	c=toupper(c);
 	for(int i(0);i<(int)str.size();++i){
 		if(str[i]==c){
 			return true;
@@ -348,7 +349,7 @@ string apply_mask(string seq, const string& mask){
 		}else{
 			switch (seq[i]){
 				case 'A':
-				if(char_in_string(c,"RWMDHVN")){
+				if(char_in_string(c,"RWMDHVN")){//THIS ALSO MATCH IF c is LOWERCASE
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
@@ -386,6 +387,7 @@ string apply_mask(string seq, const string& mask){
 					//WE HAVE NO IDEA
 					seq[i]='N';
 				}
+				break;
 			}
 		}
 	}
