@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-Wall -c -O3
 
-all: main
+all: MTool
 
 main: main.o MSA.o
 	$(CC) -o main main.o MSA.o
