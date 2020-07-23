@@ -328,6 +328,19 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 
 
 
+
+string remove_gap(const string& str){
+	string res;
+	for(int i(0);i<(int)str.size();++i){
+		if(str[i]!='-'){
+			res+=str[i];
+		}
+	}
+	return res;
+}
+
+
+
 bool char_in_string(char c, const string& str){
 	c=toupper(c);
 	for(int i(0);i<(int)str.size();++i){
