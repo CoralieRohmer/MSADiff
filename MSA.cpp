@@ -327,7 +327,21 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 
 
 
+
+string remove_gap(const string& str){
+	string res;
+	for(int i(0);i<(int)str.size();++i){
+		if(str[i]!='-'){
+			res+=str[i];
+		}
+	}
+	return res;
+}
+
+
+
 bool char_in_string(char c, const string& str){
+	c=toupper(c);
 	for(int i(0);i<(int)str.size();++i){
 		if(str[i]==c){
 			return true;
@@ -347,11 +361,11 @@ string apply_mask(string seq, const string& mask){
 		}else{
 			switch (seq[i]){
 				case 'A':
-				if(char_in_string(c,"RWMDHVN")){
+				if(char_in_string(c,"RWMDHVN")){//THIS ALSO MATCH IF c is LOWERCASE
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case 'C':
@@ -359,7 +373,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case 'G':
@@ -367,7 +381,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case 'T':
@@ -375,7 +389,7 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
 				break;
 				case '-':
@@ -383,8 +397,9 @@ string apply_mask(string seq, const string& mask){
 					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 				}else{
 					//WE HAVE NO IDEA
-					seq[i]='N';
+					seq[i]='n';
 				}
+				break;
 			}
 		}
 	}
