@@ -33,7 +33,7 @@ class MSA
     void parser_fasta(string file);
     string consensus(int threshold) const;
     string consensus_IG(int threshold) const; //consensus IUPAC + gap
-    char conversion_IG(string nucleotides) const; //IG = code IUPAC + gap
+    string conversion_IG(string nucleotides_and_gap) const; //IG = code IUPAC + gap
 
 
     MSA(){
