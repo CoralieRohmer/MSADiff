@@ -1,5 +1,7 @@
 #include "MSA.h"
 #include <algorithm>
+#include <unordered_map>
+
 
 using namespace std;
 
@@ -360,46 +362,48 @@ string apply_mask(string seq, const string& mask){
 		if(char_in_string(c,"ACTG-")){
 			seq[i]=c;
 		}else{
+			cout<<"AMBIGOUS CHAR IN CONSENSUS"<<endl;
+			cin.get();
 			switch (seq[i]){
 				case 'A':
-				if(char_in_string(c,"RWMDHVN")){//THIS ALSO MATCH IF c is LOWERCASE
-					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-				}else{
-					//WE HAVE NO IDEA
-					seq[i]='n';
-				}
+					if(char_in_string(c,"RWMDHVN")){//THIS ALSO MATCH IF c is LOWERCASE
+						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+					}else{
+						//WE HAVE NO IDEA
+						seq[i]='n';
+					}
 				break;
 				case 'C':
-				if(char_in_string(c,"YSMBHVN")){
-					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-				}else{
-					//WE HAVE NO IDEA
-					seq[i]='n';
-				}
+					if(char_in_string(c,"YSMBHVN")){
+						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+					}else{
+						//WE HAVE NO IDEA
+						seq[i]='n';
+					}
 				break;
 				case 'G':
-				if(char_in_string(c,"RSKBDVN")){
-					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-				}else{
-					//WE HAVE NO IDEA
-					seq[i]='n';
-				}
+					if(char_in_string(c,"RSKBDVN")){
+						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+					}else{
+						//WE HAVE NO IDEA
+						seq[i]='n';
+					}
 				break;
 				case 'T':
-				if(char_in_string(c,"YWKBDHN")){
-					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-				}else{
-					//WE HAVE NO IDEA
-					seq[i]='n';
-				}
+					if(char_in_string(c,"YWKBDHN")){
+						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+					}else{
+						//WE HAVE NO IDEA
+						seq[i]='n';
+					}
 				break;
 				case '-':
-				if(islower(c)){
-					//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-				}else{
-					//WE HAVE NO IDEA
-					seq[i]='n';
-				}
+					if(islower(c)){
+						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
+					}else{
+						//WE HAVE NO IDEA
+						seq[i]='n';
+					}
 				break;
 			}
 		}
@@ -524,4 +528,57 @@ void MSA::compare_consensus() const{
 		std::cout << name[i] << "\t" << unique_base[i] \
 		<< "\t" << unique_base_position[i] << '\n';
 	}
+}
+
+
+void MSA::get_diploid(){
+	string haplotype1,haplotype2;
+	//FOREACH POSITION
+	for(int i(0);i<length-1;++i){
+		unordered_map<string,uint> two_mer_count;
+		//FOREACH SEQUENCE
+		for(int j(0);j<lines;++j){
+			two_mer_count[text[j].substr(i,2)]++;
+		}
+		//WE SELECT THE TWO MOST SEEN 2MER
+		string two_mer_top1,two_mer_top2;
+		uint two_mer_top1_count(0),two_mer_top2_count(0);
+		for (auto& it: two_mer_count) {
+			if(it.second>two_mer_top1_count){
+				two_mer_top1=it.first;
+				two_mer_top1_count=it.second;
+			}else if(it.second>two_mer_top2_count){
+				two_mer_top2=it.first;
+				two_mer_top2_count=it.second;
+			}
+		}
+		if(haplotype1.empty()){
+			haplotype1=two_mer_top1;
+			haplotype2=two_mer_top2;
+		}else {
+			if(haplotype1[haplotype1.size()-1]==two_mer_top1[0]){
+				haplotype1+=two_mer_top1[1];
+			}else if (haplotype1[haplotype1.size()-1]==two_mer_top2[0]){
+				haplotype1+=two_mer_top2[1];
+			}else{
+				cout<<"haplotype1 failt"<<endl;
+				cout <<haplotype1<<endl;
+				cout <<haplotype2<<endl;
+				exit(1);
+			}
+
+			if(haplotype2[haplotype2.size()-1]==two_mer_top1[0]){
+				haplotype2+=two_mer_top1[1];
+			}else if (haplotype2[haplotype2.size()-1]==two_mer_top2[0]){
+				haplotype2+=two_mer_top2[1];
+			}else{
+				cout<<"haplotype2 failt"<<endl;
+				cout <<haplotype1<<endl;
+				cout <<haplotype2<<endl;
+				exit(1);
+			}
+		}
+	}
+	cout<<"Haplotype1: " <<haplotype1<<endl;
+	cout<<"Haplotype2: "<<haplotype2<<endl;
 }

@@ -42,6 +42,8 @@ class MSA
     MSA apply_mask_MSA(const string& mask) const;
     void count_agreements() const;
     void compare_consensus() const;
+    void get_diploid();
+
 
 
     MSA(){
