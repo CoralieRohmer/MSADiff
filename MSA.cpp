@@ -152,6 +152,7 @@ void MSA::parser_fasta(string file){
 		string ligne("");
 		while(getline(flux, ligne)){
 			if (ligne[0] == '>'){
+				name.push_back(ligne);
 				if (seq != ""){
 					add_sequence(seq);
 				}
@@ -409,5 +410,40 @@ string apply_mask(string seq, const string& mask){
 
 
 void MSA::count_agreements() const{
+	int size = (int)text.size();
+	int matrice[size][size];
+	for(int i=0; i<size ; i++){
+		for(int j=0; j<size ; j++){
+			if (i == j) {
+				matrice[i][j]=length;
+			}
+			else{
+      	matrice[i][j]=0;
+		 	}
+		}
+	}
+	for(int i(0);i<length;++i){
+		//std::cout << "pos"<< i << '\n';
+		for(int j(0);j<size;++j){
+			//std::cout << name[j] << " "<< text[j][i] << '\n';
+			if (text[j][i] != 'N'){
+				for (int k = j+1; k<size; k++) {
+					if (text[j][i] == text[k][i]){
+						matrice[j][k]++;
+					}
+				}
+			}
+		}
+	}
+	for(int i=0; i<size ; i++){
+		std::cout << name[i][1] << '\t';
+	}
+	std::cout << '\n';
 
+	for(int i=0; i<size ; i++){
+		for(int j=0; j<size ; j++){
+       cout<<matrice[i][j]<<"\t";
+		}
+		std::cout << "\t"  << name[i] << '\n';
+	}
 }

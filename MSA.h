@@ -21,6 +21,7 @@ class MSA
 {
     public:
     vector<string> text;
+    vector<string> name;
     string alphabet="ACGTN-actgn";
     int length;
     int lines;
