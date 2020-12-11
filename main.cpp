@@ -18,11 +18,18 @@ using namespace std;
 int main(int argc, char** argv){
 	MSA msa_fasta = MSA();
 	msa_fasta.parser_fasta(argv[1]);
-	string consensus(msa_fasta.consensus_IG(80));
+	string consensus(msa_fasta.consensus_IG(20));
 	cout<<consensus<<endl;
 	MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
-	msa_masked.printing();
-	//~ MSA result = msa_fasta.get_compacted_quasi(1);
-	//~ std::cout << msa_fasta.consensus_IG(80) << '\n';
+	
+	MSA result = msa_masked.get_compacted();
+	// result.printing();
+	result.get_diploid();
+	
+
+	/* MSA msa_stack = MSA();
+	msa_stack.parser_fasta("test/multi_msa_stack.fasta");
+	msa_fasta.count_agreements();
+	msa_fasta.compare_consensus(); */
   return 0;
 }

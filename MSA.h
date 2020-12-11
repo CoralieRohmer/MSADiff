@@ -41,6 +41,9 @@ class MSA
     string conversion_IG(string nucleotides_and_gap) const; //IG = code IUPAC + gap
     MSA apply_mask_MSA(const string& mask) const;
     void count_agreements() const;
+    void compare_consensus() const;
+    void get_diploid();
+
 
 
     MSA(){

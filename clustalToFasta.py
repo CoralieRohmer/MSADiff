@@ -2,7 +2,6 @@
 import sys,re,os
 from Bio import SeqIO
 
-print("hello1")
 try:
   file_clustal=sys.argv[sys.argv.index("-in") + 1]
 except:
