@@ -362,8 +362,6 @@ string apply_mask(string seq, const string& mask){
 		if(char_in_string(c,"ACTG-")){
 			seq[i]=c;
 		}else{
-			cout<<"AMBIGOUS CHAR IN CONSENSUS"<<endl;
-			cin.get();
 			switch (seq[i]){
 				case 'A':
 					if(char_in_string(c,"RWMDHVN")){//THIS ALSO MATCH IF c is LOWERCASE
@@ -531,54 +529,146 @@ void MSA::compare_consensus() const{
 }
 
 
+int char2int(char c){
+	switch(c){
+		case 'A':return 0;
+		case 'a': return 0;
+		case 'C':return 1;
+		case 'c': return 1;
+		case 'G':return 2;
+		case 'g': return 2;
+		case 'T':return 3;
+		case 't': return 3;
+	}
+	return -1;
+}
+
+
+struct next_nuc{
+	char first_nuc;
+	char second_nuc;
+	int weight;
+};
+
+bool compareWeight(const next_nuc &a, const next_nuc &b)
+{
+    return a.weight > b.weight;
+}
+
 void MSA::get_diploid(){
 	string haplotype1,haplotype2;
 	//FOREACH POSITION
 	for(int i(0);i<length-1;++i){
+		cout<<"Next nucleotide"<<endl;
 		unordered_map<string,uint> two_mer_count;
 		//FOREACH SEQUENCE
 		for(int j(0);j<lines;++j){
 			two_mer_count[text[j].substr(i,2)]++;
 		}
-		//WE SELECT THE TWO MOST SEEN 2MER
-		string two_mer_top1,two_mer_top2;
-		uint two_mer_top1_count(0),two_mer_top2_count(0);
-		for (auto& it: two_mer_count) {
-			if(it.second>two_mer_top1_count){
-				two_mer_top1=it.first;
-				two_mer_top1_count=it.second;
-			}else if(it.second>two_mer_top2_count){
-				two_mer_top2=it.first;
-				two_mer_top2_count=it.second;
+		//we select the heaviest next nuc for A,C,G,T
+		next_nuc nextA={'A','@',0},nextC={'C','@',0},nextG={'G','@',0},nextT={'T','@',0};
+		for(auto& it: two_mer_count) {
+			//cout<<"bimer "<<it.first<<endl;
+			//cout<<"bimer "<<it.first[0]<<" "<<it.first[1]<<endl;
+			switch (it.first[0]){
+				case 'A':
+					if(it.second>nextA.weight){
+						cout<<"After A its probably a "<<it.first[1]<<" instead of a "<<nextA.second_nuc<<" "<<nextA.weight<<" "<<it.second<<endl;
+						nextA.weight=it.second;
+						nextA.second_nuc=it.first[1];
+					}
+					break;
+				case 'C':
+					if(it.second>nextC.weight){
+						cout<<"After C its probably a "<<it.first[1]<<" instead of a "<<nextC.second_nuc<<" "<<nextC.weight<<" "<<it.second<<endl;
+						nextC.weight=it.second;
+						nextC.second_nuc=it.first[1];
+					}
+					break;
+				case 'G':
+					if(it.second>nextG.weight){
+						cout<<"After G its probably a "<<it.first[1]<<" instead of a "<<nextG.second_nuc<<" "<<nextG.weight<<" "<<it.second<<endl;
+						nextG.weight=it.second;
+						nextG.second_nuc=it.first[1];
+					}
+					break;
+				case 'T':
+					if(it.second>nextT.weight){
+						cout<<"After T its probably a "<<it.first[1]<<" instead of a "<<nextT.second_nuc<<" "<<nextT.weight<<" "<<it.second<<endl;
+						nextT.weight=it.second;
+						nextT.second_nuc=it.first[1];
+					}
+					break;
+				default:
+				cout<<"Do not know what to do with this "<<it.first[0]<<endl;
+				break;
 			}
 		}
+
 		if(haplotype1.empty()){
-			haplotype1=two_mer_top1;
-			haplotype2=two_mer_top2;
+			vector<next_nuc> bimers={nextA,nextT,nextC,nextG};
+			sort(bimers.begin(),bimers.end(),compareWeight);
+			haplotype1+=bimers[0].first_nuc;
+			haplotype1+=bimers[0].second_nuc;
+			haplotype2+=bimers[1].first_nuc;
+			haplotype2+=bimers[1].second_nuc;
+			cout<<bimers[0].weight<<" "<<bimers[1].weight<<endl;
+			cout<<"init:	"<<haplotype1<<" "<<haplotype2<<endl;
 		}else {
-			if(haplotype1[haplotype1.size()-1]==two_mer_top1[0]){
-				haplotype1+=two_mer_top1[1];
-			}else if (haplotype1[haplotype1.size()-1]==two_mer_top2[0]){
-				haplotype1+=two_mer_top2[1];
-			}else{
-				cout<<"haplotype1 failt"<<endl;
-				cout <<haplotype1<<endl;
-				cout <<haplotype2<<endl;
-				exit(1);
+			cout<<"A->"<<nextA.second_nuc<<" C->"<<nextC.second_nuc<<" G->"<<nextG.second_nuc<<" T->"<<nextT.second_nuc<<endl;
+			switch(haplotype1[haplotype1.size()-1]){
+				case 'A':
+					haplotype1+=nextA.second_nuc;
+					break;
+				case 'C':
+					haplotype1+=nextC.second_nuc;
+					break;
+				case 'G':
+					haplotype1+=nextG.second_nuc;
+					break;
+				case 'T':
+					haplotype1+=nextT.second_nuc;
+					break;
+				default:
+				cout << "weird nuc "<<haplotype1[haplotype1.size()-1]<<endl;
+				cout<<"haplotype1: "<<haplotype1<<endl;
+				cout<<"haplotype2: "<<haplotype2<<endl;
+				haplotype1.clear();
+				haplotype2.clear();
+				break;
+			}
+			switch(haplotype2[haplotype2.size()-1]){
+				case 'A':
+					haplotype2+=nextA.second_nuc;
+					break;
+				case 'C':
+					haplotype2+=nextC.second_nuc;
+					break;
+				case 'G':
+					haplotype2+=nextG.second_nuc;
+					break;
+				case 'T':
+					haplotype2+=nextT.second_nuc;
+					break;
+				default:
+				cout << "weird nuc "<<haplotype2[haplotype2.size()-1]<<endl;
+				cout<<"haplotype1: "<<haplotype1<<endl;
+				cout<<"haplotype2: "<<haplotype2<<endl;
+				haplotype1.clear();
+				haplotype2.clear();
+				break;
+			}
+			if(haplotype1[haplotype1.size()-1]==haplotype2[haplotype2.size()-1]){
+				cout<<"haplotypes convergence "<<endl;
+				cout<<"haplotype1: "<<haplotype1<<endl;
+				cout<<"haplotype2: "<<haplotype2<<endl;
+				haplotype1.clear();
+				haplotype2.clear();
+				cin.get();
 			}
 
-			if(haplotype2[haplotype2.size()-1]==two_mer_top1[0]){
-				haplotype2+=two_mer_top1[1];
-			}else if (haplotype2[haplotype2.size()-1]==two_mer_top2[0]){
-				haplotype2+=two_mer_top2[1];
-			}else{
-				cout<<"haplotype2 failt"<<endl;
-				cout <<haplotype1<<endl;
-				cout <<haplotype2<<endl;
-				exit(1);
-			}
 		}
 	}
 	cout<<"Haplotype1: " <<haplotype1<<endl;
-	cout<<"Haplotype2: "<<haplotype2<<endl;
+	cout<<"Haplotype2: " <<haplotype2<<endl;
 }
