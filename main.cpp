@@ -26,16 +26,6 @@ int main(int argc, char** argv){
 	//result.printing();
   //result.get_diploid();
 
-	vector<vector<uint>>neo = {
-    {0,0,0,0,0,1,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{1,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0}
-};
 	uint score(0);
 	string ringo(get_best_consensus_from_prefix("T",matrix,score));
 	cout<<ringo<<endl;

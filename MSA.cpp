@@ -598,8 +598,9 @@ string get_best_consensus_aux(const string& prefix, vector<vector<uint>> matrix,
 		string local_result;
 		uint local_score(0);
 		string local_prefix(prefix+acgt[i_nuc]);
-		if(prefix.size()==prefix_size){
+		if(local_prefix.size()==prefix_size){
 			local_result=get_best_consensus_from_prefix(local_prefix,matrix,local_score);
+			cout<<"Found "<<local_result<<" scoring: "<<local_score<<endl;
 			if(local_score>score){
 				score=local_score;
 				result=local_result;
