@@ -43,6 +43,7 @@ class MSA
     void count_agreements() const;
     void compare_consensus() const;
     void get_diploid();
+    void calculates_distance_matrix();
 
 
 

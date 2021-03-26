@@ -672,3 +672,38 @@ void MSA::get_diploid(){
 	cout<<"Haplotype1: " <<haplotype1<<endl;
 	cout<<"Haplotype2: " <<haplotype2<<endl;
 }
+
+int match_column_nucleotide(char nuc){
+	switch ( nuc )
+	{
+	case 'A':
+	  return 0;
+	case 'C':
+	  return 1;
+	case 'G':
+		return 2;
+	case 'T':
+		return 3;
+	default:
+	  return -1;
+	}
+}
+
+void MSA::calculates_distance_matrix(){
+	int matrice[length*4][length*4];
+	for (int i = 0; i < length*4; i++) {
+		for (int j = 0; j < length*4; j++) {
+			matrice[i][j]=0;
+		}
+	}
+	for (int i = 0; i < lines; i++) {
+		for (int j = 0; j < length; j++) {
+			for (int k = j+1; k < length; k++) {
+				int idNucJ=match_column_nucleotide(text[i][j])+4*j;
+				int idNucK=match_column_nucleotide(text[i][k]) +4*k;
+				matrice[idNucJ][idNucK] ++;
+				matrice[idNucK][idNucJ] ++;
+			}
+		}
+	}
+}
