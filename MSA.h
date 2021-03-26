@@ -15,7 +15,9 @@ using namespace std;
 
 bool char_in_string(char c, const string& str);
 string apply_mask(string seq, const string& mask);
-string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint nuc_number);
+string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint& score);
+string get_best_consensus(vector<vector<uint>> matrix, uint prefix_size);
+
 
 
 class MSA

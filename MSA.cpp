@@ -572,12 +572,12 @@ uint score_sequence(const string& sequence, vector<vector<uint>> matrix){
 
 
 
-string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint nuc_number){
+string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint& score){
+	uint nuc_number(matrix.size()/4);
 	string result=prefix;
 	string acgt="ACGT";
 	string best_local_solution;
 	for(uint i(prefix.size());i<nuc_number;++i){
-		uint score(0);
 		for(uint i_nuc(0);i_nuc<4;++i_nuc){
 			uint local_score(score_sequence(result+acgt[i_nuc],matrix));
 			if(local_score>score){
@@ -587,6 +587,39 @@ string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>>
 		}
 		result=best_local_solution;
 	}
+	return result;
+}
+
+
+string get_best_consensus_aux(const string& prefix, vector<vector<uint>> matrix, uint prefix_size, uint& score){
+	string acgt="ACGT";
+	string result;
+	for(uint i_nuc(0);i_nuc<4;++i_nuc){
+		string local_result;
+		uint local_score(0);
+		string local_prefix(prefix+acgt[i_nuc]);
+		if(prefix.size()==prefix_size){
+			local_result=get_best_consensus_from_prefix(local_prefix,matrix,local_score);
+			if(local_score>score){
+				score=local_score;
+				result=local_result;
+			}
+		}else{
+			local_result=get_best_consensus_aux(local_prefix,matrix,prefix_size,local_score);
+			if(local_score>score){
+				score=local_score;
+				result=local_result;
+			}
+		}
+	}
+	return result;
+}
+
+
+string get_best_consensus(vector<vector<uint>> matrix, uint prefix_size){
+	uint score(0);
+	string result=get_best_consensus_aux("", matrix, prefix_size, score);
+	cout<<"score:	"<<score<<endl;
 	return result;
 }
 
@@ -729,13 +762,11 @@ int match_column_nucleotide(char nuc){
 vector<vector<uint>> MSA::calculates_distance_matrix(){
 	vector<uint> colonne(length*4,0);
 	vector<vector<uint>> matrix(length*4,colonne);
-	std::cout << colonne.size() << matrix.size() << '\n';
 	for (int i = 0; i < lines; i++) {
 		for (int j = 0; j < length; j++) {
 			for (int k = j+1; k < length; k++) {
 				int idNucJ=match_column_nucleotide(text[i][j])+4*j;
 				int idNucK=match_column_nucleotide(text[i][k]) +4*k;
-				std::cout << idNucJ << " " << idNucK << '\n';
 				matrix[idNucJ][idNucK] ++;
 				matrix[idNucK][idNucJ] ++;
 			}
