@@ -726,21 +726,20 @@ int match_column_nucleotide(char nuc){
 	}
 }
 
-void MSA::calculates_distance_matrix(){
-	int matrice[length*4][length*4];
-	for (int i = 0; i < length*4; i++) {
-		for (int j = 0; j < length*4; j++) {
-			matrice[i][j]=0;
-		}
-	}
+vector<vector<uint>> MSA::calculates_distance_matrix(){
+	vector<uint> colonne(length*4,0);
+	vector<vector<uint>> matrix(length*4,colonne);
+	std::cout << colonne.size() << matrix.size() << '\n';
 	for (int i = 0; i < lines; i++) {
 		for (int j = 0; j < length; j++) {
 			for (int k = j+1; k < length; k++) {
 				int idNucJ=match_column_nucleotide(text[i][j])+4*j;
 				int idNucK=match_column_nucleotide(text[i][k]) +4*k;
-				matrice[idNucJ][idNucK] ++;
-				matrice[idNucK][idNucJ] ++;
+				std::cout << idNucJ << " " << idNucK << '\n';
+				matrix[idNucJ][idNucK] ++;
+				matrix[idNucK][idNucJ] ++;
 			}
 		}
 	}
+	return matrix;
 }
