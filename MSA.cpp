@@ -550,10 +550,47 @@ struct next_nuc{
 	int weight;
 };
 
+
+
 bool compareWeight(const next_nuc &a, const next_nuc &b)
 {
     return a.weight > b.weight;
 }
+
+
+uint score_sequence(const string& sequence, vector<vector<uint>> matrix){
+	uint score=0;
+	for(uint i=0; i<sequence.length();++i){
+		uint nuc_from(char2int(sequence[i]));
+		for(uint j=0; j<sequence.size();++j){
+			uint nuc_to(char2int(sequence[j]));
+			score+=matrix[4*i+nuc_from][4*j+nuc_to];
+		}
+	}
+	return score;
+}
+
+
+
+string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint nuc_number){
+	string result=prefix;
+	string acgt="ACGT";
+	string best_local_solution;
+	for(uint i(prefix.size());i<nuc_number;++i){
+		uint score(0);
+		for(uint i_nuc(0);i_nuc<4;++i_nuc){
+			uint local_score(score_sequence(result+acgt[i_nuc],matrix));
+			if(local_score>score){
+				best_local_solution=result+acgt[i_nuc];
+				score=local_score;
+			}
+		}
+		result=best_local_solution;
+	}
+	return result;
+}
+
+
 
 void MSA::get_diploid(){
 	string haplotype1,haplotype2;
@@ -572,28 +609,28 @@ void MSA::get_diploid(){
 			//cout<<"bimer "<<it.first[0]<<" "<<it.first[1]<<endl;
 			switch (it.first[0]){
 				case 'A':
-					if(it.second>nextA.weight){
+					if((int)it.second>nextA.weight){
 						cout<<"After A its probably a "<<it.first[1]<<" instead of a "<<nextA.second_nuc<<" "<<nextA.weight<<" "<<it.second<<endl;
 						nextA.weight=it.second;
 						nextA.second_nuc=it.first[1];
 					}
 					break;
 				case 'C':
-					if(it.second>nextC.weight){
+					if((int)it.second>nextC.weight){
 						cout<<"After C its probably a "<<it.first[1]<<" instead of a "<<nextC.second_nuc<<" "<<nextC.weight<<" "<<it.second<<endl;
 						nextC.weight=it.second;
 						nextC.second_nuc=it.first[1];
 					}
 					break;
 				case 'G':
-					if(it.second>nextG.weight){
+					if((int)it.second>nextG.weight){
 						cout<<"After G its probably a "<<it.first[1]<<" instead of a "<<nextG.second_nuc<<" "<<nextG.weight<<" "<<it.second<<endl;
 						nextG.weight=it.second;
 						nextG.second_nuc=it.first[1];
 					}
 					break;
 				case 'T':
-					if(it.second>nextT.weight){
+					if((int)it.second>nextT.weight){
 						cout<<"After T its probably a "<<it.first[1]<<" instead of a "<<nextT.second_nuc<<" "<<nextT.weight<<" "<<it.second<<endl;
 						nextT.weight=it.second;
 						nextT.second_nuc=it.first[1];
