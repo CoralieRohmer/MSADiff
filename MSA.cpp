@@ -368,7 +368,7 @@ string apply_mask(string seq, const string& mask){
 						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 					}else{
 						//WE HAVE NO IDEA
-						seq[i]='n';
+						// seq[i]='n';
 					}
 				break;
 				case 'C':
@@ -376,7 +376,7 @@ string apply_mask(string seq, const string& mask){
 						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 					}else{
 						//WE HAVE NO IDEA
-						seq[i]='n';
+						// seq[i]='n';
 					}
 				break;
 				case 'G':
@@ -384,7 +384,7 @@ string apply_mask(string seq, const string& mask){
 						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 					}else{
 						//WE HAVE NO IDEA
-						seq[i]='n';
+						// seq[i]='n';
 					}
 				break;
 				case 'T':
@@ -392,7 +392,7 @@ string apply_mask(string seq, const string& mask){
 						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 					}else{
 						//WE HAVE NO IDEA
-						seq[i]='n';
+						// seq[i]='n';
 					}
 				break;
 				case '-':
@@ -400,7 +400,7 @@ string apply_mask(string seq, const string& mask){
 						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
 					}else{
 						//WE HAVE NO IDEA
-						seq[i]='n';
+						// seq[i]='n';
 					}
 				break;
 			}
@@ -766,8 +766,14 @@ vector<vector<uint>> MSA::calculates_distance_matrix(){
 	for (int i = 0; i < lines; i++) {
 		for (int j = 0; j < length; j++) {
 			for (int k = j+1; k < length; k++) {
+				// cout<<"access"<<endl;
+				// cout<<i<<" "<<j<<endl;
+				// cout<<text.size()<<endl;
+				// cout<<text[i].size()<<endl;
+				// cout<<match_column_nucleotide(text[i][j])<<endl;
 				int idNucJ=match_column_nucleotide(text[i][j])+4*j;
-				int idNucK=match_column_nucleotide(text[i][k]) +4*k;
+				int idNucK=match_column_nucleotide(text[i][k])+4*k;
+				// cout<<idNucJ<<" "<<idNucK<<endl;
 				matrix[idNucJ][idNucK] ++;
 				matrix[idNucK][idNucJ] ++;
 			}
