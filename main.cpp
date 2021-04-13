@@ -20,13 +20,20 @@ int main(int argc, char** argv){
 	msa_fasta.parser_fasta(argv[1]);
 	string consensus(msa_fasta.consensus_IG(80));
 	MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
+	// msa_masked.printing();
+	// cin.get();
 	MSA result = msa_masked.get_compacted();
+	// result.printing();
+		// cout<< "calculates_distance_matrix"<<endl;
+
 	auto matrix=result.calculates_distance_matrix();
+			// cout<< "OK"<<endl;
 
 	//result.printing();
   //result.get_diploid();
 
 	uint score(0);
+	cout<< "get_best_consensus_from_prefix"<<endl;
 	string ringo(get_best_consensus_from_prefix("T",matrix,score));
 	cout<<ringo<<endl;
 
