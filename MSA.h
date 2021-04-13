@@ -47,6 +47,7 @@ class MSA
     void compare_consensus() const;
     void get_diploid();
     vector<vector<uint>> calculates_distance_matrix();
+    vector<string> haplotype_merge(vector<string> haplo_snip);
 
 
     MSA(){

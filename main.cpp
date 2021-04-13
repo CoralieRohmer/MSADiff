@@ -38,15 +38,13 @@ int main(int argc, char** argv){
 	cout<<ringo<<endl;
 
 	string lestringo(get_best_consensus(matrix,1));
-	cout<<lestringo<<endl;
+	//cout<<lestringo<<endl;
 
 	vector<string> haplo_snip;
 	haplo_snip.push_back("AACA");
 	haplo_snip.push_back("GACC");
 
 	vector<string> haplo = msa_masked.haplotype_merge(haplo_snip);
-	std::cout << "Haplotype1 : "<< haplo[0] << '\n';
-	std::cout << "Haplotype2 : "<< haplo[1] << '\n';
 
 	/* MSA msa_stack = MSA();
 	msa_stack.parser_fasta("test/multi_msa_stack.fasta");
