@@ -775,3 +775,36 @@ vector<vector<uint>> MSA::calculates_distance_matrix(){
 	}
 	return matrix;
 }
+
+vector<string> MSA::haplotype_merge(vector<string> haplo_snip){
+	cout <<"Haplo snip1 : "<< haplo_snip[0] << '\n';
+	cout <<"Haplo snip2 : "<< haplo_snip[1] << '\n';
+	vector<string> haplo(haplo_snip.size());
+	int snip_to_add=0;
+	for(int i(0);i<length;++i){
+		bool snip = false;
+		char previous = 'N';
+		int j=0;
+		while (!snip && j<(int)text.size()) {
+			if(previous!= 'N' && text[j][i] !=  previous){
+				snip=true;
+			}
+			previous=text[j][i];
+			j++;
+		}
+		std::cout << "Snip: " << snip << '\n';
+		if(snip){
+			for (int k = 0; k < (int)haplo_snip.size(); k++) {
+				std::cout << snip_to_add << '\n';
+				haplo[k] += haplo_snip[k][snip_to_add];
+			}
+			snip_to_add++;
+		}
+		else{
+			for (int k = 0; k < (int)haplo_snip.size(); k++) {
+				haplo[k] += text[0][i];
+			}
+		}
+	}
+	return haplo;
+}
