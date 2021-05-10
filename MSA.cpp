@@ -628,11 +628,15 @@ vector<pair<uint64_t,string>> get_best_consensus_vector(const string& prefix, ve
 			local_result=get_best_consensus_from_prefix(local_prefix,matrix,local_score);
 			cout<<"Found "<<local_result<<" scoring: "<<local_score<<endl;
 			score=local_score;
-			result.push_back({local_score,local_result});
+			if(not local_result.empty()){
+				result.push_back({local_score,local_result});
+			}
 		}else{
 			local_result=get_best_consensus_aux(local_prefix,matrix,prefix_size,local_score);
 			score=local_score;
-			result.push_back({local_score,local_result});
+			if(not local_result.empty()){
+				result.push_back({local_score,local_result});
+			}
 		}
 	}
 	return result;
@@ -646,10 +650,10 @@ vector<string> get_best_consensus_vector(vector<vector<uint>> matrix, uint prefi
 	sort(consensus.begin(),consensus.end());
 	reverse(consensus.begin(),consensus.end());
 	vector<string> result;
-	//~ cout<<"sorted result:	"<<consensus.size()<<endl;
-	for(uint i(0);i<number_consensus;++i){
-		//~ cout<<"score:	"<<consensus[i].first<<endl;
-		//~ cout<<"seq:	"<<consensus[i].second<<endl;
+	cout<<"sorted result:	"<<consensus.size()<<endl;
+	for(uint i(0);i<min((uint)consensus.size(),number_consensus);++i){
+		cout<<"score:	"<<consensus[i].first<<endl;
+		cout<<"seq:	"<<consensus[i].second<<endl;
 		result.push_back(consensus[i].second);
 
 	}
