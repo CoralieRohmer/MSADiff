@@ -617,6 +617,48 @@ string get_best_consensus_aux(const string& prefix, vector<vector<uint>> matrix,
 }
 
 
+vector<pair<uint64_t,string>> get_best_consensus_vector(const string& prefix, vector<vector<uint>> matrix, uint prefix_size, uint& score){
+	string acgt="ACGT";
+	vector<pair<uint64_t,string>> result;
+	for(uint i_nuc(0);i_nuc<4;++i_nuc){
+		string local_result;
+		uint local_score(0);
+		string local_prefix(prefix+acgt[i_nuc]);
+		if(local_prefix.size()==prefix_size){
+			local_result=get_best_consensus_from_prefix(local_prefix,matrix,local_score);
+			cout<<"Found "<<local_result<<" scoring: "<<local_score<<endl;
+			score=local_score;
+			result.push_back({local_score,local_result});
+		}else{
+			local_result=get_best_consensus_aux(local_prefix,matrix,prefix_size,local_score);
+			score=local_score;
+			result.push_back({local_score,local_result});
+		}
+	}
+	return result;
+}
+
+
+
+vector<string> get_best_consensus_vector(vector<vector<uint>> matrix, uint prefix_size,uint number_consensus){
+	uint score(0);
+	auto consensus=get_best_consensus_vector("", matrix, prefix_size, score);
+	sort(consensus.begin(),consensus.end());
+	reverse(consensus.begin(),consensus.end());
+	vector<string> result;
+	//~ cout<<"sorted result:	"<<consensus.size()<<endl;
+	for(uint i(0);i<number_consensus;++i){
+		//~ cout<<"score:	"<<consensus[i].first<<endl;
+		//~ cout<<"seq:	"<<consensus[i].second<<endl;
+		result.push_back(consensus[i].second);
+
+	}
+	return result;
+}
+
+
+
+
 string get_best_consensus(vector<vector<uint>> matrix, uint prefix_size){
 	uint score(0);
 	string result=get_best_consensus_aux("", matrix, prefix_size, score);
