@@ -20,13 +20,9 @@ int main(int argc, char** argv){
 	msa_fasta.parser_fasta(argv[1]);
 	string consensus(msa_fasta.consensus_IG(80));
 	MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
-	// msa_masked.printing();
-	// cin.get();
 	MSA result = msa_masked.get_compacted();
-	// result.printing();
-
+	result.printing();
 	auto matrix=result.calculates_distance_matrix();
-	//result.printing();
 	//result.get_diploid();
 
 	uint score(0);
@@ -38,7 +34,7 @@ int main(int argc, char** argv){
 	cout<<lestringo<<endl;
 	cout<<"new fonction"<<endl;
 	vector<string> haplotypes=get_best_consensus_vector(matrix,1,4);
-
+	
 	vector<string> haplo = msa_masked.haplotype_merge(haplotypes);
 	cout<<"haplotyes decompressés"<<endl;
 	for(uint i(0);i<haplo.size();++i){
