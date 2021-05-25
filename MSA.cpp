@@ -145,7 +145,25 @@ MSA MSA::apply_mask_MSA(const string& mask) const{
 	return result;
 }
 
+string apply_mask(string seq, const string& mask){
+	for(int i(0);i<(int)seq.size();++i){
+		char c(mask[i]);
+		//WE TRUST THE CONSENSUS FOR THIS NUC
+		if(char_in_string(c,"ACTG-")){
+			seq[i]=c;
+		}
+	}
+	return seq;
+}
 
+bool char_in_string(char c, const string& str){
+	for(int i(0);i<(int)str.size();++i){
+		if(str[i]==c){
+			return true;
+		}
+	}
+	return false;
+}
 
 void MSA::parser_fasta(string file){
 	ifstream flux(file.c_str());
@@ -436,74 +454,6 @@ string remove_gap(const string& str){
 
 
 
-bool char_in_string(char c, const string& str){
-	c=toupper(c);
-	for(int i(0);i<(int)str.size();++i){
-		if(str[i]==c){
-			return true;
-		}
-	}
-	return false;
-}
-
-
-
-string apply_mask(string seq, const string& mask){
-	for(int i(0);i<(int)seq.size();++i){
-		char c(mask[i]);
-		//WE TRUST THE CONSENSUS FOR THIS NUC
-		if(char_in_string(c,"ACTG-")){
-			seq[i]=c;
-		}else{
-			switch (seq[i]){
-				case 'A':
-					if(char_in_string(c,"RWMDHVN")){//THIS ALSO MATCH IF c is LOWERCASE
-						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-					}else{
-						//WE HAVE NO IDEA
-						// seq[i]='n';
-					}
-				break;
-				case 'C':
-					if(char_in_string(c,"YSMBHVN")){
-						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-					}else{
-						//WE HAVE NO IDEA
-						// seq[i]='n';
-					}
-				break;
-				case 'G':
-					if(char_in_string(c,"RSKBDVN")){
-						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-					}else{
-						//WE HAVE NO IDEA
-						// seq[i]='n';
-					}
-				break;
-				case 'T':
-					if(char_in_string(c,"YWKBDHN")){
-						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-					}else{
-						//WE HAVE NO IDEA
-						// seq[i]='n';
-					}
-				break;
-				case '-':
-					if(islower(c)){
-						//WE DO NOTHING, THIS SHOULD BE THE RIGHT NUC
-					}else{
-						//WE HAVE NO IDEA
-						// seq[i]='n';
-					}
-				break;
-			}
-		}
-	}
-	return seq;
-}
-
-
-
 void MSA::count_agreements() const{
 	int size = (int)text.size();
 	int matrice[size][size];
@@ -632,6 +582,7 @@ int char2int(char c){
 		case 'g': return 2;
 		case 'T':return 3;
 		case 't': return 3;
+		case '-': return 4;
 	}
 	return -1;
 }
@@ -657,7 +608,7 @@ uint score_sequence(const string& sequence, vector<vector<uint>> matrix){
 		uint nuc_from(char2int(sequence[i]));
 		for(uint j=0; j<sequence.size();++j){
 			uint nuc_to(char2int(sequence[j]));
-			score+=matrix[4*i+nuc_from][4*j+nuc_to];
+			score+=matrix[5*i+nuc_from][5*j+nuc_to];
 		}
 	}
 	return score;
@@ -666,12 +617,12 @@ uint score_sequence(const string& sequence, vector<vector<uint>> matrix){
 
 
 string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint& score){
-	uint nuc_number(matrix.size()/4);
+	uint nuc_number(matrix.size()/5);
 	string result=prefix;
-	string acgt="ACGT";
+	string acgt="ACGT-";
 	string best_local_solution;
 	for(uint i(prefix.size());i<nuc_number;++i){
-		for(uint i_nuc(0);i_nuc<4;++i_nuc){
+		for(uint i_nuc(0);i_nuc<5;++i_nuc){
 			uint local_score(score_sequence(result+acgt[i_nuc],matrix));
 			if(local_score>score){
 				best_local_solution=result+acgt[i_nuc];
@@ -680,14 +631,15 @@ string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>>
 		}
 		result=best_local_solution;
 	}
+	std::cout << result << '\n';
 	return result;
 }
 
 
 string get_best_consensus_aux(const string& prefix, vector<vector<uint>> matrix, uint prefix_size, uint& score){
-	string acgt="ACGT";
+	string acgt="ACGT-";
 	string result;
-	for(uint i_nuc(0);i_nuc<4;++i_nuc){
+	for(uint i_nuc(0);i_nuc<5;++i_nuc){
 		string local_result;
 		uint local_score(0);
 		string local_prefix(prefix+acgt[i_nuc]);
@@ -711,9 +663,9 @@ string get_best_consensus_aux(const string& prefix, vector<vector<uint>> matrix,
 
 
 vector<pair<uint64_t,string>> get_best_consensus_vector(const string& prefix, vector<vector<uint>> matrix, uint prefix_size, uint& score){
-	string acgt="ACGT";
+	string acgt="ACGT-";
 	vector<pair<uint64_t,string>> result;
-	for(uint i_nuc(0);i_nuc<4;++i_nuc){
+	for(uint i_nuc(0);i_nuc<5;++i_nuc){
 		string local_result;
 		uint local_score(0);
 		string local_prefix(prefix+acgt[i_nuc]);
@@ -894,25 +846,21 @@ int match_column_nucleotide(char nuc){
 		return 2;
 	case 'T':
 		return 3;
+	case '-':
+		return 4;
 	default:
 	  return -1;
 	}
 }
 
 vector<vector<uint>> MSA::calculates_distance_matrix(){
-	vector<uint> colonne(length*4,0);
-	vector<vector<uint>> matrix(length*4,colonne);
+	vector<uint> colonne(length*5,0);
+	vector<vector<uint>> matrix(length*5,colonne);
 	for (int i = 0; i < lines; i++) {
 		for (int j = 0; j < length; j++) {
 			for (int k = j+1; k < length; k++) {
-				// cout<<"access"<<endl;
-				// cout<<i<<" "<<j<<endl;
-				// cout<<text.size()<<endl;
-				// cout<<text[i].size()<<endl;
-				// cout<<match_column_nucleotide(text[i][j])<<endl;
-				int idNucJ=match_column_nucleotide(text[i][j])+4*j;
-				int idNucK=match_column_nucleotide(text[i][k])+4*k;
-				// cout<<idNucJ<<" "<<idNucK<<endl;
+				int idNucJ=match_column_nucleotide(text[i][j])+5*j;
+				int idNucK=match_column_nucleotide(text[i][k])+5*k;
 				matrix[idNucJ][idNucK] ++;
 				matrix[idNucK][idNucJ] ++;
 			}
