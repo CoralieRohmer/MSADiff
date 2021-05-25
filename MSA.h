@@ -18,6 +18,8 @@ string apply_mask(string seq, const string& mask);
 string get_best_consensus_from_prefix(const string& prefix, vector<vector<uint>> matrix, uint& score);
 string get_best_consensus(vector<vector<uint>> matrix, uint prefix_size);
 vector<string> get_best_consensus_vector(vector<vector<uint>> matrix, uint prefix_size,uint number_consensus);
+void reverse_shuffle_haplotype(vector<uint>& result,string& haplotype);
+void reverse_shuffle_haplotypes(vector<uint>& result,vector<string>& haplotypes);
 
 
 
@@ -49,7 +51,9 @@ class MSA
     void get_diploid();
     vector<vector<uint>> calculates_distance_matrix();
     vector<string> haplotype_merge(vector<string> haplo_snip);
-
+    vector<uint> shuffle_msa();
+    void reverse_shuffle_msa(vector<uint>& result);
+ 
 
     MSA(){
 		length=0;

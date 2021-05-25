@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 
+
 using namespace std;
 
 
@@ -69,6 +70,7 @@ bool MSA::perfect_column(int indice)const {
 }
 
 
+
 char MSA::major_nuc(int indice)const{
 	int scores[alphabet.size()]={0};
 	char result('Z');
@@ -129,7 +131,6 @@ MSA MSA::get_compacted_quasi(int max_errors ) const{
 	cout<<"Compaction done, length before:	"<<length<<" after:	"<<result.length<<endl;
 	return result;
 }
-
 
 
 
@@ -257,10 +258,103 @@ string MSA::consensus_IG(int threshold) const{
 
 		}
 		consensus_seq += conversion_IG(totale_conserved_nuc);
-		//std::cout << totale_conserved_nuc << '\n';
 	}
 	return consensus_seq;
 }
+
+
+
+vector<uint> MSA::shuffle_msa(){
+	vector<pair<double,uint>> ratios;
+	for(uint i(0);i<length;++i){
+		vector<int> scores(5,0);
+		for(uint j(0);j<lines;++j){
+			switch(text[j][i]){
+				case 'A':
+					scores[0]++;
+					break;
+				case 'C':
+					scores[1]++;
+					break;
+				case 'G':
+					scores[2]++;
+					break;
+				case 'T':
+					scores[3]++;
+					break;
+				scores[4]++;
+			}
+		}
+		double cmax(0),cmin(0);
+		for(uint j(0);j<5;++j){
+			//~ cout<<scores[j]<<endl;
+			if(scores[j]>cmax){
+				if(cmax>cmin){
+					cmin=cmax;
+				}
+				cmax=scores[j];
+			}else{
+				if(scores[j]>cmin){
+					cmin=scores[j];
+				}
+			}
+		}
+		//~ cout<<cmax<<" "<<cmin<<endl;
+		ratios.push_back({cmax/cmin,ratios.size()});
+	}
+	//~ cout<<"ration computed"<<endl;
+	sort(ratios.begin(),ratios.end());
+	//~ for(uint i(0);i<ratios.size();++i){
+		//~ cout<<ratios[i].first<<" "<<ratios[i].second<<endl;
+	//~ }
+	vector<string> new_text(text);
+	vector<uint> result;
+	for(uint i(0);i<ratios.size();++i){
+		for(uint j(0);j<lines;++j){
+			//~ cout<<ratios[i].second<<" "<<j<<endl;
+			//~ cout<<i<<" "<<j<<endl;
+			//~ cout<<text.size()<<endl;
+			new_text[j][i]=text[j][ratios[i].second];
+		}
+		result.push_back(ratios[i].second);
+	}
+	text=new_text;
+	return result;
+}
+
+
+
+void MSA::reverse_shuffle_msa(vector<uint>& result){
+	vector<string> new_text(text);
+	//~ cout<<"resultsize"<<result.size()<<endl;
+	for(uint i(0);i<result.size();++i){
+		for(uint j(0);j<lines;++j){
+			//~ cout<<i<<" "<<j<<" "<<result[i]<<endl;
+			//~ cout<<new_text.size()<<endl;
+			new_text[j][result[i]]=text[j][i];
+		}
+	}
+	text=new_text;	
+}
+
+
+
+void reverse_shuffle_haplotype(vector<uint>& result,string& haplotype){
+	string new_haplotype=haplotype;
+	for(uint i(0);i<result.size();++i){
+		new_haplotype[result[i]]=haplotype[i];
+	}
+	haplotype=new_haplotype;
+}
+
+
+
+void reverse_shuffle_haplotypes(vector<uint>& result,vector<string>& haplotypes){
+	for(uint i(0);i<haplotypes.size();++i){
+		reverse_shuffle_haplotype(result,haplotypes[i]);
+	}
+}
+
 
 
 
@@ -286,7 +380,6 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 		}
 	}
 	else{
-		//std::cout << nucleotides << '\n';
 		bool gap(false);
 		int i(0);
 		while( !gap && i < (int)nucleotides.size()) {

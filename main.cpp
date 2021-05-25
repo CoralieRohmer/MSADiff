@@ -18,12 +18,17 @@ using namespace std;
 int main(int argc, char** argv){
 	MSA msa_fasta = MSA();
 	msa_fasta.parser_fasta(argv[1]);
-	string consensus(msa_fasta.consensus_IG(80));
+	string consensus(msa_fasta.consensus_IG(90));
 	MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
 	// msa_masked.printing();
 	// cin.get();
 	MSA result = msa_masked.get_compacted();
-	// result.printing();
+	//~ cout<<"go shuffle"<<endl;
+	//~ result.printing();
+	vector<uint> new_order=result.shuffle_msa();
+		cout<<" shuffle"<<endl;
+
+	//~ result.printing();
 
 	auto matrix=result.calculates_distance_matrix();
 	//result.printing();
@@ -38,6 +43,11 @@ int main(int argc, char** argv){
 	cout<<lestringo<<endl;
 	cout<<"new fonction"<<endl;
 	vector<string> haplotypes=get_best_consensus_vector(matrix,1,4);
+	reverse_shuffle_haplotype(new_order,haplotypes[0]);
+	//~ result.printing();
+	result.reverse_shuffle_msa(new_order);
+	//~ result.printing();
+
 
 	vector<string> haplo = msa_masked.haplotype_merge(haplotypes);
 	cout<<"haplotyes decompressés"<<endl;
