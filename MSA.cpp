@@ -284,9 +284,9 @@ string MSA::consensus_IG(int threshold) const{
 
 vector<uint> MSA::shuffle_msa(){
 	vector<pair<double,uint>> ratios;
-	for(uint i(0);i<length;++i){
+	for(int i(0);i<length;++i){
 		vector<int> scores(5,0);
-		for(uint j(0);j<lines;++j){
+		for(int j(0);j<lines;++j){
 			switch(text[j][i]){
 				case 'A':
 					scores[0]++;
@@ -300,12 +300,13 @@ vector<uint> MSA::shuffle_msa(){
 				case 'T':
 					scores[3]++;
 					break;
-				scores[4]++;
+				case '-':
+					scores[4]++;
+					break;
 			}
 		}
 		double cmax(0),cmin(0);
 		for(uint j(0);j<5;++j){
-			//~ cout<<scores[j]<<endl;
 			if(scores[j]>cmax){
 				if(cmax>cmin){
 					cmin=cmax;
@@ -317,21 +318,13 @@ vector<uint> MSA::shuffle_msa(){
 				}
 			}
 		}
-		//~ cout<<cmax<<" "<<cmin<<endl;
 		ratios.push_back({cmax/cmin,ratios.size()});
 	}
-	//~ cout<<"ration computed"<<endl;
 	sort(ratios.begin(),ratios.end());
-	//~ for(uint i(0);i<ratios.size();++i){
-		//~ cout<<ratios[i].first<<" "<<ratios[i].second<<endl;
-	//~ }
 	vector<string> new_text(text);
 	vector<uint> result;
 	for(uint i(0);i<ratios.size();++i){
-		for(uint j(0);j<lines;++j){
-			//~ cout<<ratios[i].second<<" "<<j<<endl;
-			//~ cout<<i<<" "<<j<<endl;
-			//~ cout<<text.size()<<endl;
+		for(int j(0);j<lines;++j){
 			new_text[j][i]=text[j][ratios[i].second];
 		}
 		result.push_back(ratios[i].second);
@@ -344,15 +337,12 @@ vector<uint> MSA::shuffle_msa(){
 
 void MSA::reverse_shuffle_msa(vector<uint>& result){
 	vector<string> new_text(text);
-	//~ cout<<"resultsize"<<result.size()<<endl;
 	for(uint i(0);i<result.size();++i){
-		for(uint j(0);j<lines;++j){
-			//~ cout<<i<<" "<<j<<" "<<result[i]<<endl;
-			//~ cout<<new_text.size()<<endl;
+		for(int j(0);j<lines;++j){
 			new_text[j][result[i]]=text[j][i];
 		}
 	}
-	text=new_text;	
+	text=new_text;
 }
 
 
@@ -434,8 +424,6 @@ string MSA::conversion_IG(string nucleotides_and_gap) const{
 	if (gap) {
 		result = tolower(result[0]);
 	}
-
-	//std::cout <<  "[" << nucleotides_and_gap << "] [" << nucleotides << "] [" << result << "]" << '\n';
 	return result;
 }
 
@@ -547,7 +535,6 @@ void MSA::compare_consensus() const{
 
 
 	for(int i(0);i<lines;++i){
-		//std::cout << "\npos" << i << '\n';
 		for(int j(0);j<length;++j){
 			int k(0);
 			bool unique(true);
