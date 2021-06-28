@@ -53,7 +53,8 @@ class MSA
     vector<string> haplotype_merge(vector<string> haplo_snip);
     vector<uint> shuffle_msa();
     void reverse_shuffle_msa(vector<uint>& result);
- 
+    vector<uint> order_colonnes(int ploidy, double pb_error);
+    MSA cleaning(int threshold);
 
     MSA(){
 		length=0;

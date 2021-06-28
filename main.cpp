@@ -18,12 +18,14 @@ using namespace std;
 int main(int argc, char** argv){
 	MSA msa_fasta = MSA();
 	msa_fasta.parser_fasta(argv[1]);
-	string consensus(msa_fasta.consensus_IG(70));
-	MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
-	MSA result = msa_masked.get_compacted();
-	result.printing();
-	vector<uint> new_order=result.shuffle_msa();
+	// string consensus(msa_fasta.consensus_IG(70));
+	// MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
+	// msa_masked.printing();
+	MSA msa_clean(msa_fasta.cleaning(70));
+	MSA result = msa_clean.get_compacted();
 	//result.printing();
+
+	vector<uint> new_order=result.order_colonnes(2,0.10);
 
 	auto matrix=result.calculates_distance_matrix();
 	//result.get_diploid();
@@ -42,8 +44,8 @@ int main(int argc, char** argv){
 	result.reverse_shuffle_msa(new_order);
 	//~ result.printing();
 
-	vector<string> haplo = msa_masked.haplotype_merge(haplotypes);
-	cout<<"haplotyes decompressés"<<endl;
+	vector<string> haplo = msa_clean.haplotype_merge(haplotypes);
+	cout<<"Decompressed haplotyes"<<endl;
 	for(uint i(0);i<haplo.size();++i){
 		cout<<haplo[i]<<endl;
 	}

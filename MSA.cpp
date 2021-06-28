@@ -6,7 +6,31 @@
 
 using namespace std;
 
+int char2int(char c){
+	switch(c){
+		case 'A':return 0;
+		case 'a': return 0;
+		case 'C':return 1;
+		case 'c': return 1;
+		case 'G':return 2;
+		case 'g': return 2;
+		case 'T':return 3;
+		case 't': return 3;
+		case '-': return 4;
+	}
+	return -1;
+}
 
+char int2char(int i){
+	switch(i){
+		case 0 :return 'A';
+		case 1 :return 'C';
+		case 2 :return 'G';
+		case 3 :return 'T';
+		case 4 : return '-';
+	}
+	return -1;
+}
 
 void MSA::add_sequence(const string& str){
 	text.push_back(str);
@@ -132,14 +156,50 @@ MSA MSA::get_compacted_quasi(int max_errors ) const{
 	return result;
 }
 
-
+MSA MSA::cleaning(int threshold){
+	MSA result;
+	//SEARCH COLUMNS TO BE CORRECTED
+	vector<pair<int,char>> column_to_clean;
+	for (int i = 0; i < length; i++) {
+		vector<int> occ(5,0);
+		for (int j = 0; j < lines; j++) {
+			occ[char2int(text[j][i])]++;
+		}
+		vector<int> max(2,0);
+		int frequency(0);
+		for (int j = 0; j < 5; j++) {
+			frequency=100*occ[j]/lines;
+			if (frequency > max[0]) {
+				max[0]=frequency;
+				max[1]=j;
+			}
+		}
+		if (max[0] >= threshold) {
+			column_to_clean.push_back({i,int2char(max[1])});
+		}
+	}
+	//CORRECTION OF COLUMNS
+	string line;
+	int nb_column(column_to_clean.size());
+	std::cout << "Cleaning steps: " << nb_column <<" sequencing error(s) found and corrected." << '\n';
+	for (int i = 0; i < lines; i++) {
+		line = text[i];
+		for (int j = 0; j < nb_column; j++) {
+			line[column_to_clean[j].first] = column_to_clean[j].second;
+		}
+		result.add_sequence(line);
+	}
+	return result;
+}
 
 MSA MSA::apply_mask_MSA(const string& mask) const{
 	MSA result;
 	string line;
 	for(int i(0);i<(int)text.size();++i){
 		line=text[i];
+		std::cout << line << '\n';
 		line=apply_mask(line,mask);
+		std::cout << line << "\n\n";
 		result.add_sequence(line);
 	}
 	return result;
@@ -333,7 +393,61 @@ vector<uint> MSA::shuffle_msa(){
 	return result;
 }
 
+vector<uint> MSA::order_colonnes(int ploidy, double pb_error){
+	double pb_haplo((double)1/ploidy);
+	vector<pair<double,uint>> pb_colonnes;
+	//CALCULATES THE PROBA FOR EACH COLUMN
+	for(int i(0);i<length;++i){
+		vector<int> occ(5,0);
+		for(int j(0);j<lines;++j){
+			occ[char2int(text[j][i])]++;
+		}
+		vector<int> max_occ(ploidy,0);
+		vector<char> max_nuc(ploidy,0);
+		//search majority nucleotides
+		for (int j = 0; j < 5; j++) {
+			int min(max_occ[0]);
+			int min_k(0);
+			for (int k = 0; k < ploidy; k++) {
+				//search for the smallest maximum that exceeds our occurrence (to manage polyploidy)
+				if (occ[j] > max_occ[k]) {
+					if (max_occ[k] < min) {
+						min=max_occ[k];
+						min_k=k;
+					}
+				}
+			}
+			if (occ[j] > max_occ[min_k]) {
+				max_occ[min_k]=occ[j];
+				max_nuc[min_k]=int2char(j);
+			}
+		}
 
+		double somme_pb(0);
+		for (int j = 0; j < lines; j++) {
+			if (*find(max_nuc.begin(), max_nuc.end(), text[j][i]) == text[j][i]) {
+				somme_pb+=pb_haplo*(1-pb_error) + (ploidy-1)*pb_haplo*pb_error;
+			}
+			else{
+				somme_pb+=ploidy*pb_haplo*pb_error;
+			}
+		}
+		pb_colonnes.push_back({1-somme_pb/lines,pb_colonnes.size()});
+	}
+
+	//SORT THE COLUMNS ACCORDING THEIR PROBA
+	sort(pb_colonnes.begin(),pb_colonnes.end());
+	vector<string> new_text(text);
+	vector<uint> result;
+	for(uint i(0);i<pb_colonnes.size();++i){
+		for(int j(0);j<lines;++j){
+			new_text[j][i]=text[j][pb_colonnes[i].second];
+		}
+		result.push_back(pb_colonnes[i].second);
+	}
+	text=new_text;
+	return result;
+}
 
 void MSA::reverse_shuffle_msa(vector<uint>& result){
 	vector<string> new_text(text);
@@ -559,20 +673,7 @@ void MSA::compare_consensus() const{
 }
 
 
-int char2int(char c){
-	switch(c){
-		case 'A':return 0;
-		case 'a': return 0;
-		case 'C':return 1;
-		case 'c': return 1;
-		case 'G':return 2;
-		case 'g': return 2;
-		case 'T':return 3;
-		case 't': return 3;
-		case '-': return 4;
-	}
-	return -1;
-}
+
 
 
 struct next_nuc{
@@ -822,32 +923,14 @@ void MSA::get_diploid(){
 	cout<<"Haplotype2: " <<haplotype2<<endl;
 }
 
-int match_column_nucleotide(char nuc){
-	switch ( nuc )
-	{
-	case 'A':
-	  return 0;
-	case 'C':
-	  return 1;
-	case 'G':
-		return 2;
-	case 'T':
-		return 3;
-	case '-':
-		return 4;
-	default:
-	  return -1;
-	}
-}
-
 vector<vector<uint>> MSA::calculates_distance_matrix(){
 	vector<uint> colonne(length*5,0);
 	vector<vector<uint>> matrix(length*5,colonne);
 	for (int i = 0; i < lines; i++) {
 		for (int j = 0; j < length; j++) {
 			for (int k = j+1; k < length; k++) {
-				int idNucJ=match_column_nucleotide(text[i][j])+5*j;
-				int idNucK=match_column_nucleotide(text[i][k])+5*k;
+				int idNucJ=char2int(text[i][j])+5*j;
+				int idNucK=char2int(text[i][k])+5*k;
 				matrix[idNucJ][idNucK] ++;
 				matrix[idNucK][idNucJ] ++;
 			}
