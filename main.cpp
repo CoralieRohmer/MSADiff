@@ -16,16 +16,19 @@ using namespace std;
 
 
 int main(int argc, char** argv){
+	const double pb_error(0.1);
 	MSA msa_fasta = MSA();
 	msa_fasta.parser_fasta(argv[1]);
+	//msa_fasta.printing();
 	// string consensus(msa_fasta.consensus_IG(70));
 	// MSA msa_masked(msa_fasta.apply_mask_MSA(consensus));
-	// msa_masked.printing();
-	MSA msa_clean(msa_fasta.cleaning(70));
+	//msa_masked.printing();
+	MSA msa_clean(msa_fasta.cleaning(pb_error));
+	//msa_clean.printing();
 	MSA result = msa_clean.get_compacted();
 	//result.printing();
 
-	vector<uint> new_order=result.order_colonnes(2,0.10);
+	vector<uint> new_order=result.order_colonnes(pb_error);
 
 	auto matrix=result.calculates_distance_matrix();
 	//result.get_diploid();

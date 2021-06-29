@@ -156,26 +156,66 @@ MSA MSA::get_compacted_quasi(int max_errors ) const{
 	return result;
 }
 
-MSA MSA::cleaning(int threshold){
+double MSA::pb_colonne(int i, int ploidy, double pb_error){
+	double pb_haplo((double)1/ploidy);
+	vector<int> occ(5,0);
+	for(int j(0);j<lines;++j){
+		occ[char2int(text[j][i])]++;
+	}
+	vector<int> max_occ(ploidy,0);
+	vector<char> max_nuc(ploidy,0);
+	//search majority nucleotides
+	for (int j = 0; j < 5; j++) {
+		int min(max_occ[0]);
+		int min_k(0);
+		for (int k = 0; k < ploidy; k++) {
+			//search for the smallest maximum that exceeds our occurrence (to manage polyploidy)
+			if (occ[j] > max_occ[k]) {
+				if (max_occ[k] < min) {
+					min=max_occ[k];
+					min_k=k;
+				}
+			}
+		}
+		if (occ[j] > max_occ[min_k]) {
+			max_occ[min_k]=occ[j];
+			max_nuc[min_k]=int2char(j);
+		}
+	}
+
+	double pb_column(1);
+	for (int j = 0; j < lines; j++) {
+		if (*find(max_nuc.begin(), max_nuc.end(), text[j][i]) == text[j][i]) {
+			pb_column*=pb_haplo*(1-pb_error) + (ploidy-1)*pb_haplo*pb_error;
+		}
+		else{
+			pb_column*=ploidy*pb_haplo*pb_error;
+		}
+	}
+	return pb_column;
+}
+
+MSA MSA::cleaning(double pb_error){
 	MSA result;
 	//SEARCH COLUMNS TO BE CORRECTED
 	vector<pair<int,char>> column_to_clean;
 	for (int i = 0; i < length; i++) {
 		vector<int> occ(5,0);
-		for (int j = 0; j < lines; j++) {
-			occ[char2int(text[j][i])]++;
-		}
-		vector<int> max(2,0);
-		int frequency(0);
-		for (int j = 0; j < 5; j++) {
-			frequency=100*occ[j]/lines;
-			if (frequency > max[0]) {
-				max[0]=frequency;
-				max[1]=j;
+		double pb_haplo = pb_colonne(i, 1, pb_error);
+		double pb_diploide = pb_colonne(i, 2, pb_error);
+		if (pb_haplo > pb_diploide) {
+			for (size_t j = 0; j < lines; j++) {
+				occ[char2int(text[j][i])]++;
 			}
-		}
-		if (max[0] >= threshold) {
-			column_to_clean.push_back({i,int2char(max[1])});
+			int max_occ(0);
+			int maj_nuc(0);
+			for (int j = 0; j < 5; j++) {
+				if (occ[j] > max_occ) {
+					max_occ = occ[j];
+					maj_nuc = j;
+				}
+			}
+			column_to_clean.push_back({i,int2char(maj_nuc)});
 		}
 	}
 	//CORRECTION OF COLUMNS
@@ -393,46 +433,11 @@ vector<uint> MSA::shuffle_msa(){
 	return result;
 }
 
-vector<uint> MSA::order_colonnes(int ploidy, double pb_error){
-	double pb_haplo((double)1/ploidy);
+vector<uint> MSA::order_colonnes(double pb_error){
 	vector<pair<double,uint>> pb_colonnes;
 	//CALCULATES THE PROBA FOR EACH COLUMN
 	for(int i(0);i<length;++i){
-		vector<int> occ(5,0);
-		for(int j(0);j<lines;++j){
-			occ[char2int(text[j][i])]++;
-		}
-		vector<int> max_occ(ploidy,0);
-		vector<char> max_nuc(ploidy,0);
-		//search majority nucleotides
-		for (int j = 0; j < 5; j++) {
-			int min(max_occ[0]);
-			int min_k(0);
-			for (int k = 0; k < ploidy; k++) {
-				//search for the smallest maximum that exceeds our occurrence (to manage polyploidy)
-				if (occ[j] > max_occ[k]) {
-					if (max_occ[k] < min) {
-						min=max_occ[k];
-						min_k=k;
-					}
-				}
-			}
-			if (occ[j] > max_occ[min_k]) {
-				max_occ[min_k]=occ[j];
-				max_nuc[min_k]=int2char(j);
-			}
-		}
-
-		double somme_pb(0);
-		for (int j = 0; j < lines; j++) {
-			if (*find(max_nuc.begin(), max_nuc.end(), text[j][i]) == text[j][i]) {
-				somme_pb+=pb_haplo*(1-pb_error) + (ploidy-1)*pb_haplo*pb_error;
-			}
-			else{
-				somme_pb+=ploidy*pb_haplo*pb_error;
-			}
-		}
-		pb_colonnes.push_back({1-somme_pb/lines,pb_colonnes.size()});
+		pb_colonnes.push_back({1-pb_colonne(i,2,pb_error),pb_colonnes.size()});
 	}
 
 	//SORT THE COLUMNS ACCORDING THEIR PROBA
