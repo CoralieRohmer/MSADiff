@@ -17,6 +17,7 @@ using namespace std;
 
 int main(int argc, char** argv){
 	const double pb_error(0.1);
+
 	MSA msa_fasta = MSA();
 	msa_fasta.parser_fasta(argv[1]);
 	//msa_fasta.printing();
@@ -29,6 +30,8 @@ int main(int argc, char** argv){
 	//result.printing();
 
 	vector<uint> new_order=result.order_colonnes(pb_error);
+	//result.printing();
+	result.clustering(pb_error);
 
 	auto matrix=result.calculates_distance_matrix();
 	//result.get_diploid();

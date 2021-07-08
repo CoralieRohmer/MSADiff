@@ -204,7 +204,7 @@ MSA MSA::cleaning(double pb_error){
 		double pb_haplo = pb_colonne(i, 1, pb_error);
 		double pb_diploide = pb_colonne(i, 2, pb_error);
 		if (pb_haplo > pb_diploide) {
-			for (size_t j = 0; j < lines; j++) {
+			for (int j = 0; j < lines; j++) {
 				occ[char2int(text[j][i])]++;
 			}
 			int max_occ(0);
@@ -215,7 +215,9 @@ MSA MSA::cleaning(double pb_error){
 					maj_nuc = j;
 				}
 			}
-			column_to_clean.push_back({i,int2char(maj_nuc)});
+			if (max_occ != lines) {
+				column_to_clean.push_back({i,int2char(maj_nuc)});
+			}
 		}
 	}
 	//CORRECTION OF COLUMNS
@@ -971,4 +973,76 @@ vector<string> MSA::haplotype_merge(vector<string> haplo_snip){
 		}
 	}
 	return haplo;
+}
+
+vector<uint> create_one_cluster(int i,vector<vector<uint>> matrix,double pb_error, int length){
+	vector<uint> cluster;
+	vector<uint> treated;
+	treated.push_back(i);
+	while(treated.size() > 0){
+		uint nb_read_treated=treated.size();
+		for (uint j = 0; j < nb_read_treated; j++) {
+			int read=treated[treated.size()-1];
+			cluster.push_back(read);
+			treated.pop_back();
+			for (uint k = 0; k < matrix.size(); k++) {
+				if (matrix[k][read] < 2.5*pb_error*length){
+					if (find(cluster.begin(), cluster.end(), k) == cluster.end() &&
+							find(treated.begin(), treated.end(), k) == treated.end()) {
+						treated.push_back(k);
+					}
+				}
+			}
+		}
+	}
+	return cluster;
+}
+
+void MSA::clustering(double pb_error){
+	vector<uint> colonne(lines,0);
+	vector<vector<uint>> matrix(lines,colonne);
+	for (int i = 0; i < length; i++) {
+		for (int j = 0; j < lines-1; j++) {
+			for (int k = j+1; k < lines; k++) {
+				if (text[j][i] != text[k][i]) {
+					matrix[j][k]++;
+					matrix[k][j]++;
+				}
+			}
+		}
+	}
+
+	vector<vector<uint>> clusters;
+	bool all_treated(0);
+	int i(0);
+	while (!all_treated){
+		clusters.push_back(create_one_cluster(i,matrix,pb_error,length));
+		bool next(1);
+		while(next && i < lines){
+			i++;
+			uint j(0);
+			bool bfind(0);
+			while (!bfind && j < clusters.size()) {
+				if (find(clusters[j].begin(), clusters[j].end(), i) != clusters[j].end()) {
+					bfind=1;
+				}
+				j++;
+			}
+			if (!bfind) {
+				next=0;
+			}
+		}
+		if (i >= lines) {
+			all_treated=1;
+		}
+	}
+	std::cout << "\n=======Clusters==============" << '\n';
+	for (uint i = 0; i < clusters.size(); i++) {
+		std::cout << "Cluster n°" << i << "\n{ ";
+		for (uint j = 0; j < clusters[i].size(); j++) {
+			std::cout << clusters[i][j] << ' ';
+		}
+		std::cout << '}' << '\n';
+	}
+
 }

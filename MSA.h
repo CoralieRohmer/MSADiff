@@ -56,6 +56,7 @@ class MSA
     vector<uint> order_colonnes(double pb_error);
     MSA cleaning(double pb_error);
     double pb_colonne(int i, int ploidy, double pb_error);
+    void clustering(double pb_error);
 
     MSA(){
 		length=0;
