@@ -1046,3 +1046,38 @@ void MSA::clustering(double pb_error){
 	}
 
 }
+
+void MSA::clustering_haplo(vector<string> haplotypes){
+	vector<vector<uint>> clusters;
+	for (uint i = 0; i < haplotypes.size(); i++) {
+		vector<uint> cluster;
+		clusters.push_back(cluster);
+	}
+	for (int i = 0; i < lines; i++) {
+		vector<int> score_haplo(haplotypes.size(),0);
+		for (int j = 0; j < length; j++) {
+			for(uint k(0);k<haplotypes.size();++k){
+				if (text[i][j] == haplotypes[k][j]) {
+					score_haplo[k]++;
+				}
+			}
+		}
+		int max(0);
+		int n_cluster(0);
+		for (uint k = 0; k < haplotypes.size(); k++) {
+			if (score_haplo[k]>max) {
+				max = score_haplo[k];
+				n_cluster = k;
+			}
+		}
+		clusters[n_cluster].push_back(i);
+	}
+	std::cout << "\n=======Clusters==============" << '\n';
+	for (uint i = 0; i < clusters.size(); i++) {
+		std::cout << "Cluster n°" << i << "\n{ ";
+		for (uint j = 0; j < clusters[i].size(); j++) {
+			std::cout << clusters[i][j] << ' ';
+		}
+		std::cout << '}' << '\n';
+	}
+}

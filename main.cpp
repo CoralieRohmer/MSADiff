@@ -45,6 +45,7 @@ int main(int argc, char** argv){
 	//cout<<lestringo<<endl;
 	//cout<<"new fonction"<<endl;
 	vector<string> haplotypes=get_best_consensus_vector(matrix,1,4);
+
 	reverse_shuffle_haplotype(new_order,haplotypes[0]);
 	//~ result.printing();
 	result.reverse_shuffle_msa(new_order);
@@ -55,6 +56,7 @@ int main(int argc, char** argv){
 	for(uint i(0);i<haplo.size();++i){
 		cout<<haplo[i]<<endl;
 	}
+	msa_fasta.clustering_haplo(haplo);
 
 	/* MSA msa_stack = MSA();
 	msa_stack.parser_fasta("test/multi_msa_stack.fasta");
